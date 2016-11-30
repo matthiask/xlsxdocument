@@ -1,0 +1,9 @@
+*.pyc
+*~
+.*.swp
+\#*#
+.DS_Store
+._*
+/dist
+MANIFEST
+*.egg-info

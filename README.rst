@@ -7,13 +7,26 @@ the purpose of exporting data less boring::
 
     from xlsxdocument import XLSXDocument
 
-
     def xlsx_export(request):
         some_data = Bla.objects.all()
 
         xlsx = XLSXDocument()
         xlsx.table_from_queryset(Bla.objects.all())
         return xlsx.to_response('bla.xlsx')
+
+
+Adding in additional cells at the end is also possible::
+
+    xlsx = XLSXDocument()
+    xlsx.table_from_queryset(
+        Bla.objects.all(),
+        additional=[(
+            'Full URL',
+            lambda instance: 'http://example.com%s' % (
+                instance.get_absolute_url(),
+            ),
+        )],
+    )
 
 
 You can also easily add the facility to export rows to Django's

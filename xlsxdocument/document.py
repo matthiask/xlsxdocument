@@ -52,11 +52,12 @@ class XLSXDocument(object):
 
             self.sheet.append(processed)
 
-    def table_from_queryset(self, queryset):
+    def table_from_queryset(self, queryset, additional=()):
         opts = queryset.model._meta
 
         titles = ['str']
         titles.extend(field.name for field in opts.fields)
+        titles.extend(a[0] for a in additional)
 
         data = []
         for instance in queryset:
@@ -68,6 +69,7 @@ class XLSXDocument(object):
                 else:
                     row.append(getattr(instance, field.name))
 
+            row.extend(a[1](instance) for a in additional)
             data.append(row)
 
         self.add_sheet('%s' % opts.verbose_name_plural)

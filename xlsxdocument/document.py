@@ -1,22 +1,3 @@
-"""
-Example usage inside Django's admin panel::
-
-    from django.contrib import admin
-    from django.utils.translation import ugettext_lazy as _
-
-    from app import models
-    from app.tools.xlsx import export_selected
-
-
-    class AttendanceAdmin(admin.ModelAdmin):
-        list_filter = ('event',)
-        actions = (export_selected,)
-
-
-    admin.site.register(models.Event)
-    admin.site.register(models.Attendance, AttendanceAdmin)
-"""
-
 from datetime import date
 from decimal import Decimal
 from io import BytesIO

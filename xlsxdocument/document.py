@@ -72,12 +72,14 @@ class XLSXDocument(object):
         return response
 
 
-def create_export_selected(additional=()):
+def create_export_selected(
+        additional=(),
+        short_description=_('export selected')):
     def export_selected(modeladmin, request, queryset):
         xlsx = XLSXDocument()
         xlsx.table_from_queryset(queryset, additional=additional)
         return xlsx.to_response('%s.xlsx' % modeladmin.model._meta.label_lower)
-    export_selected.short_description = _('export selected')
+    export_selected.short_description = short_description
 
     return export_selected
 

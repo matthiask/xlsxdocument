@@ -4,6 +4,6 @@ __version__ = '.'.join(map(str, VERSION))
 
 try:
     # Convenience.
-    from .document import XLSXDocument, export_selected  # noqa
+    from .document import *  # noqa
 except ImportError:
     pass

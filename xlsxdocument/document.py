@@ -7,6 +7,9 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
 
+__all__ = ('XLSXDocument', 'create_export_selected', 'export_selected')
+
+
 class XLSXDocument(object):
     def __init__(self):
         self.workbook = Workbook(write_only=True)
@@ -69,10 +72,14 @@ class XLSXDocument(object):
         return response
 
 
-def export_selected(modeladmin, request, queryset):
-    xlsx = XLSXDocument()
-    xlsx.table_from_queryset(queryset)
-    return xlsx.to_response('%s.xlsx' % modeladmin.model._meta.label_lower)
+def create_export_selected(additional=()):
+    def export_selected(modeladmin, request, queryset):
+        xlsx = XLSXDocument()
+        xlsx.table_from_queryset(queryset, additional=additional)
+        return xlsx.to_response('%s.xlsx' % modeladmin.model._meta.label_lower)
+    export_selected.short_description = _('export selected')
+
+    return export_selected
 
 
-export_selected.short_description = _('export selected')
+export_selected = create_export_selected()

@@ -49,4 +49,19 @@ administration interface::
     admin.site.register(models.Attendance, AttendanceAdmin)
 
 
+If you require additional columns with ``export_selected`` use this
+snippet instead::
+
+    from xlsxdocument import create_export_selected
+
+    class AttendanceAdmin(...):
+        actions = [
+            create_export_selected(
+                additional=[
+                    # ... see above
+                ]
+            )
+        ]
+
+
 .. _openpyxl: https://openpyxl.readthedocs.io/

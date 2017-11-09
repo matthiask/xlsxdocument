@@ -1,7 +1,7 @@
 from datetime import date
 from decimal import Decimal
-from io import BytesIO
 from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
@@ -57,15 +57,12 @@ class XLSXDocument(object):
         self.table(titles, data)
 
     def to_response(self, filename):
-        output = BytesIO()
-        self.workbook.save(output)
         response = HttpResponse(
-            output.getvalue(),
+            save_virtual_workbook(self.workbook),
             content_type=(
                 'application/vnd.openxmlformats-officedocument.'
                 'spreadsheetml.sheet'),
         )
-        output.close()
         response['Content-Disposition'] = 'attachment; filename="%s"' % (
             filename,
         )

@@ -4,6 +4,7 @@ from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from django.http import HttpResponse
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -56,7 +57,7 @@ class XLSXDocument(object):
             row.extend(a[1](instance) for a in additional)
             data.append(row)
 
-        self.add_sheet('%s' % opts.verbose_name_plural)
+        self.add_sheet(slugify(opts.verbose_name_plural))
         self.table(titles, data)
 
     def to_response(self, filename):

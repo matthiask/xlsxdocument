@@ -57,7 +57,7 @@ class XLSXDocument(object):
             row.extend(a[1](instance) for a in additional)
             data.append(row)
 
-        self.add_sheet(slugify(opts.verbose_name_plural))
+        self.add_sheet(slugify('%s' % opts.verbose_name_plural))
         self.table(titles, data)
 
     def to_response(self, filename):

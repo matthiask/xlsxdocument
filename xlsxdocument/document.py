@@ -8,7 +8,7 @@ from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 
-__all__ = ('XLSXDocument', 'create_export_selected', 'export_selected')
+__all__ = ("XLSXDocument", "create_export_selected", "export_selected")
 
 
 class XLSXDocument(object):
@@ -27,62 +27,58 @@ class XLSXDocument(object):
             processed = []
             for i, value in enumerate(row):
                 if isinstance(value, date):
-                    processed.append(value.strftime('%Y-%m-%d'))
+                    processed.append(value.strftime("%Y-%m-%d"))
                 elif isinstance(value, (int, float, Decimal)):
                     processed.append(value)
                 elif value is None:
-                    processed.append('-')
+                    processed.append("-")
                 else:
-                    processed.append(('%s' % value).strip())
+                    processed.append(("%s" % value).strip())
 
             self.sheet.append(processed)
 
     def table_from_queryset(self, queryset, additional=()):
         opts = queryset.model._meta
 
-        titles = ['str']
+        titles = ["str"]
         titles.extend(field.name for field in opts.fields)
         titles.extend(a[0] for a in additional)
 
         data = []
         for instance in queryset:
-            row = ['%s' % instance]
+            row = ["%s" % instance]
             for field in opts.fields:
                 if field.choices:
-                    row.append(
-                        getattr(instance, 'get_%s_display' % field.name)())
+                    row.append(getattr(instance, "get_%s_display" % field.name)())
                 else:
                     row.append(getattr(instance, field.name))
 
             row.extend(a[1](instance) for a in additional)
             data.append(row)
 
-        self.add_sheet(slugify('%s' % opts.verbose_name_plural))
+        self.add_sheet(slugify("%s" % opts.verbose_name_plural))
         self.table(titles, data)
 
     def to_response(self, filename):
         response = HttpResponse(
             save_virtual_workbook(self.workbook),
             content_type=(
-                'application/vnd.openxmlformats-officedocument.'
-                'spreadsheetml.sheet'),
+                "application/vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+            ),
         )
-        response['Content-Disposition'] = 'attachment; filename="%s"' % (
-            filename,
-        )
+        response["Content-Disposition"] = 'attachment; filename="%s"' % (filename,)
         return response
 
 
-def create_export_selected(
-        additional=(),
-        short_description=_('export selected')):
+def create_export_selected(additional=(), short_description=_("export selected")):
     def export_selected(modeladmin, request, queryset):
         xlsx = XLSXDocument()
         xlsx.table_from_queryset(queryset, additional=additional)
-        return xlsx.to_response('%s.%s.xlsx' % (
-            modeladmin.model._meta.app_label,
-            modeladmin.model._meta.model_name,
-        ))
+        return xlsx.to_response(
+            "%s.%s.xlsx"
+            % (modeladmin.model._meta.app_label, modeladmin.model._meta.model_name)
+        )
+
     export_selected.short_description = short_description
 
     return export_selected

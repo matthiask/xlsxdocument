@@ -1,7 +1,7 @@
+import io
 from datetime import date
 from decimal import Decimal
 from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
 
 from django.http import HttpResponse
 from django.utils.text import slugify
@@ -60,12 +60,15 @@ class XLSXDocument(object):
         self.table(titles, data)
 
     def to_response(self, filename):
-        response = HttpResponse(
-            save_virtual_workbook(self.workbook),
-            content_type=(
-                "application/vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
-            ),
-        )
+        with io.BytesIO() as buf:
+            self.workbook.save(buf)
+            response = HttpResponse(
+                buf.getvalue(),
+                content_type=(
+                    "application/vnd.openxmlformats-officedocument."
+                    "spreadsheetml.sheet"
+                ),
+            )
         response["Content-Disposition"] = 'attachment; filename="%s"' % (filename,)
         return response
 

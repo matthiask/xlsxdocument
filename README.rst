@@ -33,7 +33,7 @@ You can also easily add the facility to export rows to Django's
 administration interface::
 
     from django.contrib import admin
-    from django.utils.translation import ugettext_lazy as _
+    from django.utils.translation import gettext_lazy as _
 
     from xlsxdocument import export_selected
 

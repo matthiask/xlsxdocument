@@ -5,7 +5,7 @@ from openpyxl import Workbook
 
 from django.http import HttpResponse
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 __all__ = ("XLSXDocument", "create_export_selected", "export_selected")

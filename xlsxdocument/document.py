@@ -41,7 +41,7 @@ class XLSXDocument(object):
         opts = queryset.model._meta
 
         titles = ["str"]
-        titles.extend(field.name for field in opts.fields)
+        titles.extend(str(field.verbose_name) for field in opts.fields)
         titles.extend(a[0] for a in additional)
 
         data = []

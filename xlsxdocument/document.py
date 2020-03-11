@@ -4,7 +4,7 @@ from decimal import Decimal
 from openpyxl import Workbook
 
 from django.http import HttpResponse
-from django.utils.text import slugify
+from django.utils.text import capfirst, slugify
 from django.utils.translation import gettext_lazy as _
 
 
@@ -40,8 +40,8 @@ class XLSXDocument(object):
     def table_from_queryset(self, queryset, additional=()):
         opts = queryset.model._meta
 
-        titles = ["str"]
-        titles.extend(str(field.verbose_name) for field in opts.fields)
+        titles = ["__str__"]
+        titles.extend(str(capfirst(field.verbose_name)) for field in opts.fields)
         titles.extend(a[0] for a in additional)
 
         data = []

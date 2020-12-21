@@ -1,4 +1,5 @@
 import io
+import re
 from datetime import date
 from decimal import Decimal
 from openpyxl import Workbook
@@ -9,6 +10,10 @@ from django.utils.translation import gettext_lazy as _
 
 
 __all__ = ("XLSXDocument", "create_export_selected", "export_selected")
+
+
+# openpyxl, or maybe XLSX doesn't like all characters
+ILLEGAL_CHARACTERS_RE = re.compile(r"[\000-\010]|[\013-\014]|[\016-\037]")
 
 
 class XLSXDocument(object):
@@ -33,7 +38,9 @@ class XLSXDocument(object):
                 elif value is None:
                     processed.append("-")
                 else:
-                    processed.append(("%s" % value).strip())
+                    processed.append(
+                        ILLEGAL_CHARACTERS_RE.sub("", ("%s" % value).strip())
+                    )
 
             self.sheet.append(processed)
 

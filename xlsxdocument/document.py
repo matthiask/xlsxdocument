@@ -6,6 +6,7 @@ from openpyxl import Workbook
 
 from django.http import HttpResponse
 from django.utils.text import capfirst, slugify
+from django.utils.timezone import make_naive
 from django.utils.translation import gettext_lazy as _
 
 
@@ -32,7 +33,7 @@ class XLSXDocument(object):
             processed = []
             for i, value in enumerate(row):
                 if isinstance(value, date):
-                    processed.append(value.strftime("%Y-%m-%d"))
+                    processed.append(make_naive(value))
                 elif isinstance(value, (int, float, Decimal)):
                     processed.append(value)
                 elif value is None:

@@ -1,14 +1,13 @@
+import datetime as dt
 import io
 import re
-from datetime import date
 from decimal import Decimal
-from openpyxl import Workbook
 
 from django.http import HttpResponse
 from django.utils.text import capfirst, slugify
 from django.utils.timezone import make_naive
 from django.utils.translation import gettext_lazy as _
-
+from openpyxl import Workbook
 
 __all__ = ("XLSXDocument", "create_export_selected", "export_selected")
 
@@ -32,9 +31,9 @@ class XLSXDocument(object):
         for row in rows:
             processed = []
             for i, value in enumerate(row):
-                if isinstance(value, date):
+                if isinstance(value, dt.datetime) and hasattr(value, "utcoffset"):
                     processed.append(make_naive(value))
-                elif isinstance(value, (int, float, Decimal)):
+                elif isinstance(value, (int, float, Decimal, dt.date)):
                     processed.append(value)
                 elif value is None:
                     processed.append("-")

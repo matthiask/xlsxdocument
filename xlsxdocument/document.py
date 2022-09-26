@@ -32,7 +32,7 @@ class XLSXDocument(object):
             processed = []
             for i, value in enumerate(row):
                 if isinstance(value, dt.datetime) and hasattr(value, "utcoffset"):
-                    processed.append(make_naive(value))
+                    processed.append(value if is_naive(value) else make_naive(value))
                 elif isinstance(value, (int, float, Decimal, dt.date)):
                     processed.append(value)
                 elif value is None:

@@ -3,7 +3,9 @@ XLSXDocument
 ============
 
 This is a wrapper for openpyxl_ which makes creating XLSX documents with
-the purpose of exporting data less boring::
+the purpose of exporting data less boring:
+
+.. code-block:: python
 
     from xlsxdocument import XLSXDocument
 
@@ -12,17 +14,19 @@ the purpose of exporting data less boring::
 
         xlsx = XLSXDocument()
         xlsx.table_from_queryset(Bla.objects.all())
-        return xlsx.to_response('bla.xlsx')
+        return xlsx.to_response("bla.xlsx")
 
 
-Adding in additional cells at the end is also possible::
+Adding in additional cells at the end is also possible:
+
+.. code-block:: python
 
     xlsx = XLSXDocument()
     xlsx.table_from_queryset(
         Bla.objects.all(),
         additional=[(
-            'Full URL',
-            lambda instance: 'http://example.com%s' % (
+            "Full URL",
+            lambda instance: "https://example.com%s" % (
                 instance.get_absolute_url(),
             ),
         )],
@@ -30,7 +34,9 @@ Adding in additional cells at the end is also possible::
 
 
 You can also easily add the facility to export rows to Django's
-administration interface::
+administration interface:
+
+.. code-block:: python
 
     from django.contrib import admin
     from django.utils.translation import gettext_lazy as _
@@ -41,8 +47,8 @@ administration interface::
 
 
     class AttendanceAdmin(admin.ModelAdmin):
-        list_filter = ('event',)
-        actions = (export_selected,)
+        list_filter = ["event"]
+        actions = [export_selected]
 
 
     admin.site.register(models.Event)
@@ -50,7 +56,9 @@ administration interface::
 
 
 If you require additional columns with ``export_selected`` use this
-snippet instead::
+snippet instead:
+
+.. code-block:: python
 
     from xlsxdocument import create_export_selected
 

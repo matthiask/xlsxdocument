@@ -5,9 +5,10 @@ from decimal import Decimal
 
 from django.http import HttpResponse
 from django.utils.text import capfirst, slugify
-from django.utils.timezone import make_naive
+from django.utils.timezone import is_naive, make_naive
 from django.utils.translation import gettext_lazy as _
 from openpyxl import Workbook
+
 
 __all__ = ("XLSXDocument", "create_export_selected", "export_selected")
 
@@ -16,7 +17,7 @@ __all__ = ("XLSXDocument", "create_export_selected", "export_selected")
 ILLEGAL_CHARACTERS_RE = re.compile(r"[\000-\010]|[\013-\014]|[\016-\037]")
 
 
-class XLSXDocument(object):
+class XLSXDocument:
     def __init__(self):
         self.workbook = Workbook(write_only=True)
         self.sheet = None
@@ -30,8 +31,8 @@ class XLSXDocument(object):
 
         for row in rows:
             processed = []
-            for i, value in enumerate(row):
-                if isinstance(value, dt.datetime) and hasattr(value, "utcoffset"):
+            for value in row:
+                if isinstance(value, dt.datetime):
                     processed.append(value if is_naive(value) else make_naive(value))
                 elif isinstance(value, (int, float, Decimal, dt.date)):
                     processed.append(value)
@@ -76,11 +77,14 @@ class XLSXDocument(object):
                     "spreadsheetml.sheet"
                 ),
             )
-        response["Content-Disposition"] = 'attachment; filename="%s"' % (filename,)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
 
-def create_export_selected(additional=(), short_description=_("export selected")):
+_description = _("export_selected")
+
+
+def create_export_selected(additional=(), short_description=_description):
     def export_selected(modeladmin, request, queryset):
         xlsx = XLSXDocument()
         xlsx.table_from_queryset(queryset, additional=additional)

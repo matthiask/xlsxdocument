@@ -33,6 +33,37 @@ Adding in additional cells at the end is also possible:
     )
 
 
+For lower-level control, use ``add_sheet()`` and ``table()`` directly to
+build sheets from arbitrary data:
+
+.. code-block:: python
+
+    xlsx = XLSXDocument()
+    xlsx.add_sheet("Sales")
+    xlsx.table(
+        titles=["Product", "Quantity", "Price"],
+        rows=[
+            ["Widget A", 10, 9.99],
+            ["Widget B", 5, 24.99],
+        ],
+    )
+    return xlsx.to_response("sales.xlsx")
+
+You can also add multiple sheets to a single document:
+
+.. code-block:: python
+
+    xlsx = XLSXDocument()
+
+    xlsx.add_sheet("Orders")
+    xlsx.table(["ID", "Customer", "Total"], orders_data)
+
+    xlsx.add_sheet("Products")
+    xlsx.table(["SKU", "Name", "Stock"], products_data)
+
+    return xlsx.to_response("export.xlsx")
+
+
 You can also easily add the facility to export rows to Django's
 administration interface:
 

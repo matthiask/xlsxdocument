@@ -1,9 +1,4 @@
-VERSION = (1, 3, 10)
-__version__ = ".".join(map(str, VERSION))
+__version__ = "1.3.10"
 
 
-try:
-    # Convenience.
-    from .document import *  # noqa
-except ImportError:
-    pass
+from .document import *  # noqa: F403

@@ -4,6 +4,9 @@ Change log
 Next version
 ------------
 
+1.4 (2026-10-28)
+----------------
+
 * Switched to ``pyproject.toml`` and hatchling, added tests.
 * Dropped support for Python < 3.10.
 * **Security fix:** Strings starting with ``=`` are written as text instead of

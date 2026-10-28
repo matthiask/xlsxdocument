@@ -1,35 +1,33 @@
-exclude: ".yarn/|yarn.lock"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
+      - id: check-builtin-literals
+      - id: check-executables-have-shebangs
       - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
       - id: end-of-file-fixer
+      - id: mixed-line-ending
       - id: trailing-whitespace
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
-    hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.30.0
+    rev: 1.33.0
     hooks:
       - id: django-upgrade
         args: [--target-version, "3.2"]
-  - repo: https://github.com/psf/black
-    rev: 26.3.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.2
     hooks:
-      - id: black
-  - repo: https://github.com/pycqa/isort
-    rev: 8.0.1
+      - id: ruff-check
+        args: [--unsafe-fixes]
+      - id: ruff-format
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: v2.30.3
     hooks:
-      - id: isort
-        args: [--profile=black, --lines-after-imports=2, --combine-as]
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+      - id: pyproject-fmt
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: "v0.27"
     hooks:
-      - id: flake8
-        args: ["--ignore=E203,E501,W503"]
-        additional_dependencies:
-          - flake8-bugbear
+      - id: validate-pyproject

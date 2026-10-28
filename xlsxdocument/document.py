@@ -73,8 +73,7 @@ class XLSXDocument:
             response = HttpResponse(
                 buf.getvalue(),
                 content_type=(
-                    "application/vnd.openxmlformats-officedocument."
-                    "spreadsheetml.sheet"
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 ),
             )
         response["Content-Disposition"] = f'attachment; filename="{filename}"'

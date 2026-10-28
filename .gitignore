@@ -8,3 +8,5 @@
 MANIFEST
 *.egg-info
 /build
+.tox
+.venv

@@ -49,6 +49,23 @@ build sheets from arbitrary data:
     )
     return xlsx.to_response("sales.xlsx")
 
+Strings starting with ``=`` are written as text, not as formulas, since
+exported data is often untrusted (formula injection). Wrap intentional
+formulas in ``Formula``:
+
+.. code-block:: python
+
+    from xlsxdocument import Formula, XLSXDocument
+
+    xlsx.table(
+        titles=["Product", "Quantity"],
+        rows=[
+            ["Widget A", 10],
+            ["Widget B", 5],
+            ["Total", Formula("=SUM(B2:B3)")],
+        ],
+    )
+
 You can also add multiple sheets to a single document:
 
 .. code-block:: python

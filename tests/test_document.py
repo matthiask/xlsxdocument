@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 from openpyxl import load_workbook
 
-from xlsxdocument import XLSXDocument, create_export_selected, export_selected
+from xlsxdocument import Formula, XLSXDocument, create_export_selected, export_selected
 
 
 def read(response):
@@ -81,6 +81,34 @@ class XLSXDocumentTest(TestCase):
                 ]
             },
         )
+
+    def test_formula_injection(self):
+        xlsx = XLSXDocument()
+        xlsx.add_sheet("Formulas")
+        xlsx.table(
+            ["=TITLE()"],
+            [
+                [
+                    "=HYPERLINK(1)",
+                    "  =HYPERLINK(2)",
+                    # Removed control characters must not reveal a formula
+                    "\x01=HYPERLINK(3)",
+                    Formula("=1+1"),
+                ]
+            ],
+        )
+        workbook = load_workbook(io.BytesIO(xlsx.to_response("x.xlsx").content))
+        rows = list(workbook.active.iter_rows())
+        self.assertEqual(
+            [(cell.value, cell.data_type, cell.quotePrefix) for cell in rows[1]],
+            [
+                ("=HYPERLINK(1)", "s", True),
+                ("=HYPERLINK(2)", "s", True),
+                ("=HYPERLINK(3)", "s", True),
+                ("=1+1", "f", False),
+            ],
+        )
+        self.assertEqual(rows[0][0].data_type, "s")
 
 
 class ExportSelectedTest(TestCase):

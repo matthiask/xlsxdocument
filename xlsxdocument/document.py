@@ -8,13 +8,22 @@ from django.utils.text import capfirst, slugify
 from django.utils.timezone import is_naive, make_naive
 from django.utils.translation import gettext_lazy as _
 from openpyxl import Workbook
+from openpyxl.cell import WriteOnlyCell
 
 
-__all__ = ("XLSXDocument", "create_export_selected", "export_selected")
+__all__ = ("Formula", "XLSXDocument", "create_export_selected", "export_selected")
 
 
 # openpyxl, or maybe XLSX doesn't like all characters
 ILLEGAL_CHARACTERS_RE = re.compile(r"[\000-\010]|[\013-\014]|[\016-\037]")
+
+
+class Formula(str):
+    """Marks a string such as ``"=SUM(A1:A3)"`` as an intentional formula
+
+    Other strings starting with ``=`` are written as text since they may
+    contain untrusted data (formula injection).
+    """
 
 
 class XLSXDocument:
@@ -27,23 +36,30 @@ class XLSXDocument:
 
     def table(self, titles, rows):
         if titles:
-            self.sheet.append(titles)
+            self.sheet.append(self._process(titles))
 
         for row in rows:
-            processed = []
-            for value in row:
-                if isinstance(value, dt.datetime):
-                    processed.append(value if is_naive(value) else make_naive(value))
-                elif isinstance(value, (int, float, Decimal, dt.date)):
-                    processed.append(value)
-                elif value is None:
-                    processed.append("-")
-                else:
-                    processed.append(
-                        ILLEGAL_CHARACTERS_RE.sub("", ("%s" % value).strip())
-                    )
+            self.sheet.append(self._process(row))
 
-            self.sheet.append(processed)
+    def _process(self, row):
+        processed = []
+        for value in row:
+            if isinstance(value, dt.datetime):
+                processed.append(value if is_naive(value) else make_naive(value))
+            elif isinstance(value, (int, float, Decimal, dt.date, Formula)):
+                processed.append(value)
+            elif value is None:
+                processed.append("-")
+            else:
+                value = ILLEGAL_CHARACTERS_RE.sub("", ("%s" % value).strip())
+                if value.startswith("="):
+                    # openpyxl would write the value as a formula
+                    cell = WriteOnlyCell(self.sheet, value)
+                    cell.data_type = "s"
+                    cell.quotePrefix = True
+                    value = cell
+                processed.append(value)
+        return processed
 
     def table_from_queryset(self, queryset, additional=()):
         opts = queryset.model._meta
